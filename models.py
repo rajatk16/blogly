@@ -9,10 +9,6 @@ DEFAULT_IMAGE_URL = 'https://topgear.com.my/sites/default/files/default_images/a
 class User(db.Model):
   __tablename__ = "users"
 
-  @property
-  def full_name(self):
-    return f"{self.first_name} {self.last_name}"
-
   id = db.Column(
     db.Integer,
     primary_key=True,
@@ -31,8 +27,15 @@ class User(db.Model):
     nullable=False,
     default=DEFAULT_IMAGE_URL
   )
+  posts = db.relationship(
+    "Post", 
+    backref="user", 
+    cascade="all, delete-orphan"
+  )
 
-  posts = db.relationship("Post", backref="user", cascade="all, delete-orphan")
+  @property
+  def full_name(self):
+    return f"{self.first_name} {self.last_name}"
 
 class Post(db.Model):
   __tablename__ = "posts"
@@ -67,6 +70,43 @@ class Post(db.Model):
   @property
   def getTime(self):
     return self.created_at.strftime('%a %b %d %Y, %I:%M %p')
+
+class PostTag(db.Model):
+  __tablename__ = "posts_tags"
+
+  post_id = db.Column(
+    db.Integer,
+    db.ForeignKey("posts.id"),
+    primary_key=True
+  )
+
+  tag_id = db.Column(
+    db.Integer,
+    db.ForeignKey("tags.id"),
+    primary_key=True
+  )
+
+class Tag(db.Model):
+  __tablename__ = "tags"
+
+  id = db.Column(
+    db.Integer,
+    primary_key=True,
+    autoincrement=True
+  )
+
+  name = db.Column(
+    db.Text,
+    nullable=False,
+    unique=True
+  )
+
+  posts = db.relationship(
+    "Post",
+    secondary="posts_tags",
+    cascade="all, delete",
+    backref="tags"
+  )
 
 def connect_db(app):
   db.app = app

@@ -23,11 +23,19 @@
       </label>
       <input type="text" class="form-control" id="content" name="content">
     </div>
-    <button class="btn btn-danger" type="button">
-      Cancel
-    </button>
-    <button class="btn btn-primary" type="submit">
-      Add
-    </button>
+    {% for tag in tags %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="{{tag.name}}" id="{{tag.name}}" name="{{tag.name}}">
+        <label for="{{tag.name}}" class="form-check-label">{{tag.name}}</label>
+      </div>
+    {% endfor %}
+    <div class="mt-3">
+      <button class="btn btn-danger" type="button">
+        Cancel
+      </button>
+      <button class="btn btn-primary" type="submit">
+        Add
+      </button>
+    </div>
   </form>
 {% endblock %}
